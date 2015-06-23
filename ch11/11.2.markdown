@@ -1,0 +1,88 @@
+**11.2-1**
+![20140227200607421.png](C:/Users/Admin/Desktop/20140227200607421.png "")
+**11.2-3**
+
+>Professor Marley hypothesizes that he can obtain substantial performance gains by modifying the chaining scheme to keep 
+each list in sorted order. How does the professor’s modification affect the running time for successful searches, unsuccessful
+searches, insertions, and deletions?
+Solution:
++  Successful searches: Θ(1 + α), which is identical to the original running time. The element we search for is equally likely 
+to be any of the elements in the hash table, and the proofof the running time for successful searchesis similar towhat 
+we did in the lecture.
++  Unsuccessful searches: 1/2of the original runningtime, but still Θ(1 + α),if we simply assume that the probability that 
+one element's value falls between two consecutive elements in the hash slot is uniformly distributed. This is because the 
+value of the element we search for is equally likely to fallbetween any consecutive elements in the hash slot, and once 
+we find a larger value, we can stop searching.Thus, the running time for unsuccessful searchesis a half of the original
+runningtime.Its proofis similar to what we did in the lecture.
++  Insertions: Θ(1 + α), compared to the original running time of Θ(1). This is because we need to find the right location
+instead of the headto insert the element so that the list remains sorted.The operation of insertionsis similar to the 
+operationof unsuccessful searchesin this case.
++  Deletions: Θ(1 + α), same as successful searches.
+
+**11.2-4**
+
+>This solution is also posted publicly
+
+>The flag in each slot will indicate whether the slot is free.
+A free slot is in the free list, a doubly linked list of all free slots in the table.
+The slot thus contains two pointers.
+
+
+>A used slot contains an element and a pointer (possibly NIL) to the next element
+that hashes to this slot. (Of course, that pointer points to another slot in the
+table.)
+Operations
+
+
+>**Insertion:**
+If the element hashes to a free slot, just remove the slot from the free list and store the element there (with a NIL pointer). The free list must be doubly linked in order for this deletion to run in O(1) time.
+
+>If the element hashes to a used slot j , check whether the element x already there “belongs” there (its key also hashes to slot j ).
+
+
+>If so, add the new element to the chain of elements in this slot. To do so, allocate a free slot (e.g., take the head of the free list) for the new element and put this new slot at the head of the list pointed to by the hashed-to slot (j ).
+
+
+>If not, E is part of another slot’s chain. Move it to a new slot by allocating one from the free list, copying the old slot’s (j ’s) contents (element x and pointer) to the new slot, and updating the pointer in the slot that pointed to j to point to the new slot. Then insert the new element in the now-empty slot as usual.
+To update the pointer to j , it is necessary to find it by searching the chain of elements starting in the slot x hashes to.
+
+
+>**Deletion:**
+Let j be the slot the element x to be deleted hashes to.
+
+
+>If x is the only element in j (j doesn’t point to any other entries), just free the slot, returning it to the head of the free list.
+
+
+>If x is in j but there’s a pointer to a chain of other elements, move the first pointed-to entry to slot j and free the slot it was in.
+
+
+>If x is found by following a pointer from j , just free x ’s slot and splice it out of 
+the chain (i.e., update the slot that pointed to x to point to x ’s successor).
+
+
+>**Searching:**
+Check the slot the key hashes to, and if that is not the desired element, follow the chain of pointers from the slot.
+
+>All the operations take expected O(1) times for the same reason they do with the version in the book: The expected time to search the chains is O(1 + α) regardless of where the chains are stored, and the fact that all the elements are stored in the table means thatα ≤ 1.
+
+ > If the free list were singly linked, then operations that involved removing an arbitrary slot from the free list would not run in O(1) time.
+
+
+**11.2-5**
+
+>鸽笼原理：Hash U中所有元素，则必有一个slot的元素数量大于n。若不然，m个slots共有小于等于nm个元素，矛盾。
+
+**11.2-6**
+
+>Suppose we have storednkeys in a hash table of sizem, with collisions resolved by chaining, and that we know the length of each chain, including the lengthLof the longest chain. Describe a procedure that selects a key uniformly at random from among the keys in the hash table and returns it in expected timeO(L(1+ 1/α)).
+
+**Solution to Exercise 11.2-6**
+
+>We can view the hash table as if it had m rows and L columns; each row stores one chain.
+The array has mL entries storing n keys, and mL - n empty values.
+The procedure picks array positions at random until it finds a key, which it returns.
+The probability of success on one draw is n/mL, so mL/n = L/α trials are needed.
+Each trial takes time O(1), since the individual chain sizes are known.
+The chain for the last draw needs to be scanned to find the desired element, however, costing O(L).
+
